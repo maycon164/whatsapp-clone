@@ -139,7 +139,76 @@ class WhatsAppController {
 
         this.el.btnCancelMicrophone.on('click', e => {
             this.closeRecordMicrophone();
-        })
+        });
+        
+        this.el.inputText.on('keypress', e =>{
+            
+            if(e.key === 'Enter' && !e.ctrlKey) {
+                e.preventDefault();
+                this.el.btnSend.click();
+            }
+            
+
+
+        });
+
+        this.el.inputText.on('keyup', e => {
+            
+            if(this.el.inputText.innerHTML.length){
+                this.el.inputPlaceholder.hide();
+                this.el.btnSendMicrophone.hide();
+                this.el.btnSend.show();
+            }else{
+                this.el.inputPlaceholder.show();
+                this.el.btnSendMicrophone.show();
+                this.el.btnSend.hide();
+            }
+
+        });
+        
+        this.el.btnSend.on('click', e => {
+            console.log('ENVIANDO SUA MSG');
+        });
+
+        this.el.btnEmojis.on('click', e => {
+            this.el.panelEmojis.toggleClass('open');
+        });
+
+        this.el.panelEmojis.querySelectorAll('.emojik').forEach(emoji => {
+
+            emoji.on('click', e => {
+                let img = this.el.imgEmojiDefault.cloneNode();
+                
+                img.style.cssText = emoji.style.cssText;
+                img.dataset.unicode = emoji.dataset.unicode;
+                img.alt = emoji.dataset.unicode;
+
+                emoji.classList.forEach(name => {
+                    img.addClass(name);
+                });
+
+                let cursor = window.getSelection();
+                
+                if(cursor.focusNode.id == 'input-text' || !cursor.focusNode){
+                    this.el.inputText.focus();
+                    cursor = window.getSelection();
+                }
+
+                let range = document.createRange();
+                range = cursor.getRangeAt(0);
+                range.deleteContents();
+
+                let frag = document.createDocumentFragment();
+                frag.appendChild(img);
+
+                range.insertNode(frag)
+                
+                range.setStartAfter(img);
+
+                this.el.inputText.dispatchEvent(new Event('keyup'));
+            });
+
+        });
 
     }
 
