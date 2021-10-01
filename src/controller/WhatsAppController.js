@@ -1,5 +1,5 @@
-import {Format} from '../utils/Format';
-import {CameraController} from './CameraController';
+import { Format } from '../utils/Format';
+import { CameraController } from './CameraController';
 
 export class WhatsAppController {
 
@@ -86,7 +86,7 @@ export class WhatsAppController {
 
         this.el.btnAttachCamera.on('click', e => {
             this.closeAllMainPanel();
-
+            this.el.pictureCamera.hide();
             this.el.panelCamera.addClass('open').css({
                 height: "100%"
             })
@@ -97,12 +97,39 @@ export class WhatsAppController {
 
         this.el.btnClosePanelCamera.on('click', e => {
             this.closeAllMainPanel();
+            this._camera.stop();
             this.el.panelMessagesContainer.show();
 
         });
 
         this.el.btnTakePicture.on('click', e => {
-            console.log("TAKE A PICTURE");
+            
+            let dataUrl = this._camera.takePicture();
+            this.el.videoCamera.removeClass('open');
+            this.el.btnReshootPanelCamera.show();
+            
+            this.el.pictureCamera.show().css({
+                width: "auto",
+
+            });
+
+            this.el.containerSendPicture.show();
+            this.el.containerTakePicture.hide();
+            this.el.pictureCamera.src = dataUrl;
+        });
+
+        this.el.btnReshootPanelCamera.on('click', e => {
+            this.el.pictureCamera.hide()
+            this.el.btnReshootPanelCamera.hide();
+            this.el.videoCamera.addClass('open');
+
+            this.el.containerSendPicture.hide();
+            this.el.containerTakePicture.show();
+        });
+
+        this.el.btnSendPicture.on('click', e => {
+            let img = this.el.pictureCamera.src;
+            console.log(img);
         });
 
         this.el.btnAttachDocument.on('click', e => {
@@ -145,32 +172,32 @@ export class WhatsAppController {
         this.el.btnCancelMicrophone.on('click', e => {
             this.closeRecordMicrophone();
         });
-        
-        this.el.inputText.on('keypress', e =>{
-            
-            if(e.key === 'Enter' && !e.ctrlKey) {
+
+        this.el.inputText.on('keypress', e => {
+
+            if (e.key === 'Enter' && !e.ctrlKey) {
                 e.preventDefault();
                 this.el.btnSend.click();
             }
-            
+
 
 
         });
 
         this.el.inputText.on('keyup', e => {
-            
-            if(this.el.inputText.innerHTML.length){
+
+            if (this.el.inputText.innerHTML.length) {
                 this.el.inputPlaceholder.hide();
                 this.el.btnSendMicrophone.hide();
                 this.el.btnSend.show();
-            }else{
+            } else {
                 this.el.inputPlaceholder.show();
                 this.el.btnSendMicrophone.show();
                 this.el.btnSend.hide();
             }
 
         });
-        
+
         this.el.btnSend.on('click', e => {
             console.log('ENVIANDO SUA MSG');
         });
@@ -183,7 +210,7 @@ export class WhatsAppController {
 
             emoji.on('click', e => {
                 let img = this.el.imgEmojiDefault.cloneNode();
-                
+
                 img.style.cssText = emoji.style.cssText;
                 img.dataset.unicode = emoji.dataset.unicode;
                 img.alt = emoji.dataset.unicode;
@@ -193,8 +220,8 @@ export class WhatsAppController {
                 });
 
                 let cursor = window.getSelection();
-                
-                if(cursor.focusNode.id == 'input-text' || !cursor.focusNode){
+
+                if (cursor.focusNode.id == 'input-text' || !cursor.focusNode) {
                     this.el.inputText.focus();
                     cursor = window.getSelection();
                 }
@@ -207,7 +234,7 @@ export class WhatsAppController {
                 frag.appendChild(img);
 
                 range.insertNode(frag)
-                
+
                 range.setStartAfter(img);
 
                 this.el.inputText.dispatchEvent(new Event('keyup'));
