@@ -1,5 +1,6 @@
 import { Format } from '../utils/Format';
 import { CameraController } from './CameraController';
+import { DocumentPreviewController } from './DocumentPreviewController';
 
 export class WhatsAppController {
 
@@ -103,11 +104,11 @@ export class WhatsAppController {
         });
 
         this.el.btnTakePicture.on('click', e => {
-            
+
             let dataUrl = this._camera.takePicture();
             this.el.videoCamera.removeClass('open');
             this.el.btnReshootPanelCamera.show();
-            
+
             this.el.pictureCamera.show().css({
                 width: "auto",
 
@@ -138,6 +139,53 @@ export class WhatsAppController {
             this.el.panelDocumentPreview.addClass('open').css({
                 height: "100%"
             })
+
+            this.el.inputDocument.click();
+
+        });
+
+        this.el.inputDocument.on('change', e => {
+
+            if (this.el.inputDocument.files.length) {
+
+                let file = this.el.inputDocument.files[0];
+
+                this._documentPreview = new DocumentPreviewController(file);
+
+                this._documentPreview.getPreviewData().then(data => {
+
+                    this.el.imgPanelDocumentPreview.src = data.src;
+                    this.el.infoPanelDocumentPreview.innerHTML = data.info;
+                    this.el.imagePanelDocumentPreview.show();
+                    this.el.filePanelDocumentPreview.hide();
+
+                }).catch(e => {
+                    console.log(file.type);
+                    this.el.imagePanelDocumentPreview.hide();
+                    this.el.filePanelDocumentPreview.show();
+
+                    switch (file.type) {
+
+                        case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+
+                            this.el.iconPanelDocumentPreview.className = "jcxhw icon-doc-doc";
+                            break;
+
+                        case "application/vnd.openxmlformats-officedocument.presentationml.presentation":
+                            this.el.iconPanelDocumentPreview.className = "jcxhw icon-doc-ppt";
+                            break;
+
+                        case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+                            this.el.iconPanelDocumentPreview.className = "jcxhw icon-doc-xls";
+                            break;
+
+                        default:
+                            this.el.iconPanelDocumentPreview.className = "jcxhw icon-doc-generic";
+                    }
+
+                    this.el.filenamePanelDocumentPreview.innerHTML = file.name;
+                })
+            }
 
         });
 
