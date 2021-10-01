@@ -153,7 +153,7 @@ export class WhatsAppController {
                 this._documentPreview = new DocumentPreviewController(file);
 
                 this._documentPreview.getPreviewData().then(data => {
-
+                    console.log(data.canvas.toDataURL());
                     this.el.imgPanelDocumentPreview.src = data.src;
                     this.el.infoPanelDocumentPreview.innerHTML = data.info;
                     this.el.imagePanelDocumentPreview.show();
