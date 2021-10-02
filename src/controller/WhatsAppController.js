@@ -1,5 +1,6 @@
 import { Format } from '../utils/Format';
 import { CameraController } from './CameraController';
+import { MicrophoneController } from './MicrophoneController'
 import { DocumentPreviewController } from './DocumentPreviewController';
 
 export class WhatsAppController {
@@ -208,17 +209,23 @@ export class WhatsAppController {
         });
 
         this.el.btnSendMicrophone.on('click', e => {
+
             this.el.recordMicrophone.show();
             this.el.btnSendMicrophone.hide();
             this.startRecordMicrophoneTime();
+
+            this._microphone = new MicrophoneController();
+
         });
 
         this.el.btnFinishMicrophone.on('click', e => {
             this.closeRecordMicrophone();
+            this._microphone.stop();
         });
 
         this.el.btnCancelMicrophone.on('click', e => {
             this.closeRecordMicrophone();
+            this._microphone.stop();
         });
 
         this.el.inputText.on('keypress', e => {
