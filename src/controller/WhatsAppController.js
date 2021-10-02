@@ -212,7 +212,6 @@ export class WhatsAppController {
 
             this.el.recordMicrophone.show();
             this.el.btnSendMicrophone.hide();
-            this.startRecordMicrophoneTime();
 
             this._microphone = new MicrophoneController();
 
@@ -221,6 +220,10 @@ export class WhatsAppController {
                 //console.log("READY.....", audio);
                 this._microphone.startRecorder();
 
+            });
+
+            this._microphone.on('timer', time => {
+                this.el.recordMicrophoneTimer.innerHTML = Format.toTime(time);
             });
 
         });
@@ -308,19 +311,11 @@ export class WhatsAppController {
 
     }
 
-    startRecordMicrophoneTime() {
-        let start = Date.now();
 
-        this._microphoneTimer = setInterval(() => {
-            this.el.recordMicrophoneTimer.innerHTML = Format.toTime((Date.now() - start));
-        }, 100);
-
-    }
 
     closeRecordMicrophone() {
         this.el.recordMicrophone.hide();
         this.el.btnSendMicrophone.show();
-        clearInterval(this._microphoneTimer);
     }
 
     closeAllMainPanel() {
