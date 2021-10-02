@@ -216,20 +216,25 @@ export class WhatsAppController {
 
             this._microphone = new MicrophoneController();
 
-            this._microphone.on('play', audio => {
-                console.log(audio);
-            })
+            this._microphone.on('ready', audio => {
+
+                //console.log("READY.....", audio);
+                this._microphone.startRecorder();
+
+            });
 
         });
 
         this.el.btnFinishMicrophone.on('click', e => {
             this.closeRecordMicrophone();
-            this._microphone.stop();
+            this._microphone.stopRecorder();
+
         });
 
         this.el.btnCancelMicrophone.on('click', e => {
             this.closeRecordMicrophone();
-            this._microphone.stop();
+            this._microphone.stopRecorder();
+
         });
 
         this.el.inputText.on('keypress', e => {
